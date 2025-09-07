@@ -7,6 +7,7 @@ import com.google.cloud.storage.Storage;
 import com.insurance.documents.backend.constants.ApiConstants;
 import com.insurance.documents.backend.dto.FileDownloadDto;
 import com.insurance.documents.backend.exception.InvalidFileTypeException;
+import com.insurance.documents.backend.exception.ResourceNotFoundException;
 import com.insurance.documents.backend.exception.StorageException;
 import com.insurance.documents.backend.model.DocumentMetadata;
 import com.insurance.documents.backend.model.DocumentType;
@@ -49,12 +50,10 @@ public class GcsStorageService implements StorageService {
         String gcsFilename = generateUniqueFileName(file.getOriginalFilename());
 
         try {
-            // 1. Upload file to GCS
             BlobId blobId = BlobId.of(bucketName, gcsFilename);
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
             storage.create(blobInfo, file.getBytes());
 
-            // 2. Create and save metadata to the database, now including the userId
             DocumentMetadata metadata = new DocumentMetadata(userId, documentType, referenceId, gcsFilename, file.getOriginalFilename());
             return metadataRepository.save(metadata);
 
@@ -66,15 +65,13 @@ public class GcsStorageService implements StorageService {
     @Override
     @Transactional(readOnly = true)
     public FileDownloadDto downloadFile(String referenceId, DocumentType documentType) {
-        // 1. Find metadata from the database
         DocumentMetadata metadata = metadataRepository.findByReferenceIdAndDocumentType(referenceId, documentType)
-                .orElseThrow(() -> new StorageException("Document not found for reference ID: " + referenceId));
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found for reference ID: " + referenceId + " and type: " + documentType));
 
         try {
-            // 2. Download file from GCS using the filename from metadata
             Blob blob = storage.get(bucketName, metadata.getGcsFilename());
             if (blob == null) {
-                throw new StorageException("File not found in GCS: " + metadata.getGcsFilename());
+                throw new StorageException("File not found in GCS: " + metadata.getGcsFilename() + ". Database metadata may be out of sync.");
             }
             byte[] content = blob.getContent();
             return new FileDownloadDto(content, metadata.getOriginalFilename());
@@ -86,7 +83,11 @@ public class GcsStorageService implements StorageService {
     @Override
     @Transactional(readOnly = true)
     public List<DocumentMetadata> getDocumentsByUserId(String userId) {
-        return metadataRepository.findAllByUserId(userId);
+        List<DocumentMetadata> userDocuments = metadataRepository.findAllByUserId(userId);
+        if (userDocuments.isEmpty()) {
+            throw new ResourceNotFoundException("User not found or has no documents.");
+        }
+        return userDocuments;
     }
 
     private boolean isPdf(MultipartFile file) {
