@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  mysql:
+    image: niyaz04/mysql-db:latest    # custom MySQL with your data
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "3307:3306"  # host port
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: niyaz04/insurance-backend:latest  # backend from Docker Hub
+    container_name: insurance-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/insurance
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+
+volumes:
+  mysql_data:
