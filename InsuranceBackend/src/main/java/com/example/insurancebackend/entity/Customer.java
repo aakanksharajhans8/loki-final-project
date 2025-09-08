@@ -12,7 +12,7 @@ public class Customer {
 
     @Id
     @Column(name = "policy_id")
-    private Integer policyId;   // matches INT in MySQL
+    private Integer policyId;
 
     @Column(name = "customer_name")
     private String customerName;
