@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  # MySQL database for local development
+  mysql-db:
+    image: mysql:8.0
+    container_name: documents-hub-mysql
+    ports:
+      # Exposes the database on the same port 3306 on your local machine
+      - "3306:3306"
+    environment:
+      # These values MUST match what's in your application.properties
+      MYSQL_ROOT_PASSWORD: as26102001
+      MYSQL_DATABASE: documents_hub_db
+    volumes:
+      # This line makes sure your data persists even if you stop/remove the container
+      - documents-hub-data:/var/lib/mysql
+
+volumes:
+  documents-hub-data:
