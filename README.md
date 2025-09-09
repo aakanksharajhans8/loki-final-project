@@ -1,4 +1,4 @@
-#Customer Microservice – Insurance Platform
+Customer Microservice – Insurance Platform
  Overview
 
 The Insurance Platform project is built using a microservices architecture.
@@ -16,7 +16,7 @@ REST API exposure with Spring Boot
 
 Documentation via Swagger UI
 
-⚙️ Tech Stack
+ Tech Stack
 
 Java 21 + Spring Boot 3.5.5
 
