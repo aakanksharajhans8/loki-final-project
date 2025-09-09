@@ -1,20 +1,29 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  # MySQL database for local development
-  mysql-db:
-    image: mysql:8.0
-    container_name: documents-hub-mysql
-    ports:
-      # Exposes the database on the same port 3306 on your local machine
-      - "3306:3306"
+  mysql:
+    image: mysql:8.0             # 5.7 worked earlier; keep if you prefer
     environment:
-      # These values MUST match what's in your application.properties
-      MYSQL_ROOT_PASSWORD: as26102001
-      MYSQL_DATABASE: documents_hub_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: customer_db
     volumes:
-      # This line makes sure your data persists even if you stop/remove the container
-      - documents-hub-data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+    # no ports published (internal only)
+
+  customer:
+    image: customer-service:local
+    build:
+      context: ./services/customer-service
+    depends_on:
+      - mysql
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/customer_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_FLYWAY_ENABLED: "false"            # <-- disable Flyway migrations (dev only)
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create     # <-- let Hibernate create schema for dev
+    ports:
+      - "8080:8080"
 
 volumes:
-  documents-hub-data:
+  mysql_data:
