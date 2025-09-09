@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/loki-final-project.iml" filepath="$PROJECT_DIR$/.idea/loki-final-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/insurance-platform.iml" filepath="$PROJECT_DIR$/.idea/insurance-platform.iml" />
     </modules>
   </component>
 </project>

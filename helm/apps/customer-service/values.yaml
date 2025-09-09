@@ -1,0 +1,10 @@
+
+image:
+  repository: ghcr.io/YOUR_GH_USER/customer-service
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+replicaCount: 1
+service:
+  type: ClusterIP
+  port: 8080
+env: []

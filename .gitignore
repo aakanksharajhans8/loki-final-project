@@ -1,0 +1,11 @@
+
+# Java/Maven
+target/
+.mvn/
+.idea/
+*.iml
+*.class
+.DS_Store
+/node_modules
+/dist
+/coverage
