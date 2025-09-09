@@ -1,0 +1,18 @@
+# Maven target directory (will be built inside Docker anyway)
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore

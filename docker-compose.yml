@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quotation_db
+      MYSQL_USER: quotation_user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: quotation-backend
+    restart: always
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/quotation_db
+      SPRING_DATASOURCE_USERNAME: quotation_user
+      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: quotation-frontend
+    restart: always
+    ports:
+      - "3000:3000"   # Map correctly for Vite dev server
+    environment:
+      VITE_API_URL: http://backend:8083
+    volumes:
+      - ./frontend:/app        # hot reload support
+      - /app/node_modules      # prevent overwriting node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
