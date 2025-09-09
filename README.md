@@ -2,10 +2,10 @@ Quotation Mircroservice:
 
 Backend of Insurance quotation microservice using spring-boot
 
-# docker repo link:
+# docker repo link: 
 
-backend: docker pull tapan101/insurence-backend
-frontend: docker pull tapan101/insurence-frontend
+backend: docker pull tapan101/insurence-backend 
+frontend: docker pull tapan101/insurence-frontend 
 
 # Team members: (Team Gangadhar)
 1. Tapan Mahata
