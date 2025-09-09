@@ -34,7 +34,6 @@ Frontend (React) for user interface
 1️⃣ Clone the repository
 git clone https://github.com/aakanksharajhans8/loki-final-project.git
 cd loki-final-project
-git checkout customer-service
 
 2️⃣ Run with Docker Compose
 docker compose up --build
