@@ -1,0 +1,41 @@
+# File: helm/backend/values.yaml
+replicaCount: 1
+
+image:
+  repository: your-docker-registry/backend-eventcollector # CHANGE THIS
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: api.localhost # Local testing hostname
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+resources:
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 200m
+  #   memory: 256Mi
+
+# Environment variables for the backend
+env:
+  - name: SPRING_DATASOURCE_URL
+    value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/medallion_db"
+  - name: SPRING_DATASOURCE_USERNAME
+    value: "root"
+  # Use secrets for passwords in a real scenario
+  # - name: SPRING_DATASOURCE_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: mysql-secret
+  #       key: password

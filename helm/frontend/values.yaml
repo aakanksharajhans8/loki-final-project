@@ -1,0 +1,20 @@
+# File: helm/frontend/values.yaml
+replicaCount: 1
+
+image:
+  repository: your-docker-registry/frontend-insurance # CHANGE THIS
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: insurance.localhost # Local testing hostname
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
