@@ -62,13 +62,13 @@ loki-final-project/documents-hub
 
 ## ⚙️ API Endpoints
 
-| Method | Endpoint                  | Description                       |
-|--------|---------------------------|-----------------------------------|
-| POST   | `/documents`              | Upload a new document             |
-| GET    | `/documents/{id}`         | Get document metadata             |
-| GET    | `/documents/{id}/download`| Download via pre-signed URL       |
-| POST   | `/policies/{id}/pdf`      | Generate policy PDF (sync/async)  |
-| GET    | `/analytics/uploads/daily`| Daily uploads report              |
+| Method | Endpoint                    | Description                      |
+|--------|-----------------------------|----------------------------------|
+| GET    | `/documents/user/{user_id}` | Get all documents by user ID     |
+| POST   | `/documents/upload`         | Upload a new document            |
+| POST   | `/documents/download`       | Download via pre-signed URL      |
+| POST   | `/documents/policies/{id}/pdf`        | Generate policy PDF (sync/async) |
+| POST   | `/documents/claims/{id}/pdf`          | Generate Claims PDF (sync/async) |
 
 
 
@@ -78,7 +78,7 @@ loki-final-project/documents-hub
 - Java 21
 - Maven
 - Docker
-- PostgreSQL/MySQL running locally (or via Docker Compose)
+- MySQL running locally (or via Docker Compose)
 
 ### Build & Run
 ```bash
@@ -86,16 +86,34 @@ loki-final-project/documents-hub
 mvn clean package -DskipTests
 
 # run locally
-java -jar target/document-upload-policy-0.0.1-SNAPSHOT.jar
+java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
 
 ### Docker
+### 1. Build Docker image
 ```bash
-# build Docker image
-docker build -t document-upload-policy:local .
+docker build -t my-backend-image .
+````
 
-# run container
-docker run -p 8085:8080 document-upload-policy:local
+### 2. Run MySQL container (if not already running):
+```bash
+docker run -d \
+  --name my-sql \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -e MYSQL_DATABASE=documents_hub_db \
+  mysql:8
+```
+
+### 3. Run the backend container:
+```bash
+docker run -d \
+  --name backend-app \
+  -p 8080:8080 \
+  --network my-network \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://my-sql:3306/documents_hub_db \
+  -e SPRING_DATASOURCE_USERNAME=root \
+  -e SPRING_DATASOURCE_PASSWORD=password \
+  my-backend-image
 ```
 
 ## ☁️ Deployment
@@ -108,24 +126,25 @@ docker run -p 8085:8080 document-upload-policy:local
 ## 🧪 Testing
 
 - Unit tests with **JUnit + Mockito**
-- Integration tests with **Testcontainers** (PostgreSQL & Kafka)
+- Integration tests with **Testcontainers** (MySQL)
 
 📖 API docs available at:  
 [http://localhost:8085/swagger-ui.html](http://localhost:8085/swagger-ui.html)
 
 ---
 
-## 👥 Contributors
-
-- **Ashwani** → Upload & Storage
-- **Shubham** → PDF Generation
-- **Gaurav** → Security & Access
-- **Saketh** → Kafka Events & Analytics
+## Docker Images
+1. Backend
+```bash
+docker pull mohindar/documents-hub-backend
+```
 
 ---
+## 👥 Contributors
 
-## 📌 Next Steps
+- **Ashwani Kumar** → Upload & Storage on GCS
+- **Shubham Chandrasekhar Acharekar** → PDF Generation
+- **Gaurav Melkani** → Security & Access
+- **Mohindar Saketh** → Events & Analytics
 
-- Implement async PDF queue with Kafka
-- Add S3/GCS integration for document storage
-- Enhance analytics with custom dashboards  
+---
