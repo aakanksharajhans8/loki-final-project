@@ -1,6 +1,6 @@
 # End-to-End Insurance Analytics Platform — Medallion Architecture
 
-![Banner](./assets/banner.png)
+![Banner](./.assets/banner.png)
 
 **A production-minded, developer-friendly repository template** that captures clickstream from an insurance portal, processes it through a Medallion (Bronze → Silver → Gold) pipeline, and surfaces realtime analytics in a React dashboard.
 
@@ -291,12 +291,10 @@ Blue/green staging pattern: Two staging namespaces (staging-blue / staging-green
 
 ## Screenshots & Docs
 
-Add screenshots to `docs/screenshots/` after running the app locally:
 
-* Frontend Analytics Dashboard
-* MySQL Bronze rows
-* Silver normalized events
-* Gold session aggregates
+* [MySQL Bronze rows](./docs/screenshots/MySQL.png)
+* [Silver normalized events](./docs/screenshots/Silver.png)
+* [Gold session aggregates](./docs/screenshots/Gold.png)
 
 ---
 
@@ -308,5 +306,5 @@ MIT License
 
 ## Contact
 
-Project owner / Maintainer — *@vaibhav7k*
+Project owner / Maintainer — [*@vaibhav7k*](https://github.com/vaibhav7k)
 
