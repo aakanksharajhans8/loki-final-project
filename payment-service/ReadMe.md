@@ -40,19 +40,19 @@ A full-stack web application for insurance payments and policy management, built
 
 ## Project Structure
 
-├── backend/ # Spring Boot backend
-│ ├── src/
-│ ├── Dockerfile
-│ ├── pom.xml
-├── frontend/ # React frontend
-│ ├── src/
-│ ├── Dockerfile
-│ ├── package.json
-├── docker-compose.yml # Docker Compose multi-service setup
+├── backend/                  # Spring Boot backend
+│   ├── src/
+│   ├── Dockerfile
+│   ├── pom.xml
+├── frontend/                 # React frontend
+│   ├── src/
+│   ├── Dockerfile
+│   ├── package.json
+├── docker-compose.yml        # Docker Compose multi-service setup
 ├── .github/
-│ └── workflows/
-│ └── ci-cd.yml # GitHub Actions pipeline
-└── README.md # Project documentation
+│   └── workflows/
+│       └── ci-cd.yml         # GitHub Actions pipeline
+└── README.md                 # Project documentation
 
 
 
