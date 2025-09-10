@@ -1,0 +1,24 @@
+# File: argocd/application-backend.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: <YOUR_GITHUB_REPO_URL>  # <-- CHANGE THIS
+    targetRevision: HEAD
+    path: helm/backend
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
