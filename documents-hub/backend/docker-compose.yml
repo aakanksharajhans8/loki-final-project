@@ -1,20 +1,28 @@
-version: '3.8'
-
 services:
-  # MySQL database for local development
   mysql-db:
-    image: mysql:8.0
-    container_name: documents-hub-mysql
-    ports:
-      # Exposes the database on the same port 3306 on your local machine
-      - "3306:3306"
+    image: mysql:8.1
+    container_name: mysql-db
     environment:
-      # These values MUST match what's in your application.properties
-      MYSQL_ROOT_PASSWORD: as26102001
-      MYSQL_DATABASE: documents_hub_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: documents_hub
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"   # host:container, avoids conflicts
     volumes:
-      # This line makes sure your data persists even if you stop/remove the container
-      - documents-hub-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    build: .
+    container_name: backend-app
+    depends_on:
+      - mysql-db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/documents_hub
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
 
 volumes:
-  documents-hub-data:
+  mysql-data:
