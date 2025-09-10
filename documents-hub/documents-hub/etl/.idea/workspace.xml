@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="50b1bdce-f536-4a2a-89d2-3ce6ee7b4be2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../argocd/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../argocd/application.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/gcs_loader.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/gcs_to_mysql.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/python/transformer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/V1__bronze_load.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/V2__silver_cleanse.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/V3__gold_analytics.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../helm/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../helm/document-service/deployment.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../helm/document-service/service.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../helm/document-service/values.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../terraform/.gitkeep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../terraform/docuement-service/main.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../terraform/docuement-service/variables.tf" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="32VbRH85DCVVwtImN1vM3dTmJRQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/mohindarsaketh/Desktop/Sam/loki-final-project/documents-hub/etl"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="50b1bdce-f536-4a2a-89d2-3ce6ee7b4be2" name="Changes" comment="" />
+      <created>1757508676415</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1757508676415</updated>
+    </task>
+    <servers />
+  </component>
+</project>

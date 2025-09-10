@@ -1,0 +1,7 @@
+replicaCount: 1
+image:
+  repository: document-service
+  tag: latest
+service:
+  type: ClusterIP
+  port: 8080
