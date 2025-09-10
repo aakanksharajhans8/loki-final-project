@@ -1,0 +1,127 @@
+# Bronze Layer
+
+CREATE DATABASE IF NOT EXISTS payments_db;
+USE payments_db;
+
+CREATE TABLE bronze_payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    amount_paise BIGINT,
+    created_at DATETIME(6),
+    currency VARCHAR(255),
+    customer_name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(255),
+    policy_number VARCHAR(255),
+    policy_type VARCHAR(255),
+    razorpay_order_id VARCHAR(255),
+    razorpay_payment_id VARCHAR(255),
+    razorpay_signature VARCHAR(255),
+    status VARCHAR(255),
+    tax_paise BIGINT
+);
+
+SHOW VARIABLES LIKE "secure_file_priv";
+
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/payment_transactions_structured.csv'
+INTO TABLE bronze_payments
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+## Silver Layer
+
+CREATE TABLE silver_payments AS
+SELECT 
+    id,
+    ROUND(amount_paise/100, 2) AS amount_rupees,
+    created_at,
+    UPPER(currency) AS currency,
+    customer_name,
+    LOWER(email) AS email,
+    REGEXP_REPLACE(phone, '[^0-9]', '') AS phone, -- keep digits only
+    policy_number,
+    policy_type,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    CASE 
+        WHEN status IN ('success', 'SUCCESS', 'ok') THEN 'SUCCESS'
+        WHEN status IN ('failed', 'FAILED', 'error') THEN 'FAILED'
+        WHEN status IN ('pending', 'PENDING') THEN 'PENDING'
+        WHEN status IN ('refunded', 'REFUNDED') THEN 'REFUNDED'
+        ELSE 'CREATED'
+    END AS status,
+    ROUND(tax_paise/100, 2) AS tax_rupees
+FROM bronze_payments;
+
+### Gold Layer
+
+CREATE TABLE gold_payments_summary AS
+SELECT 
+    customer_name,
+    email,
+    policy_type,
+    COUNT(*) AS total_transactions,
+    SUM(CASE WHEN status = 'SUCCESS' THEN 1 ELSE 0 END) AS successful_payments,
+    SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END) AS failed_payments,
+    SUM(amount_rupees) AS total_amount,
+    SUM(tax_rupees) AS total_tax
+FROM silver_payments
+GROUP BY customer_name, email, policy_type;
+
+
+## EDA QUERIES
+
+## ------------ EDA ON SILVER -------------
+
+-- Total rows
+SELECT COUNT(*) FROM silver_payments;
+
+-- Unique customers
+SELECT COUNT(DISTINCT email) FROM silver_payments;
+
+-- Transactions by status
+SELECT status, COUNT(*) 
+FROM silver_payments
+GROUP BY status;
+
+-- Transactions by policy type
+SELECT policy_type, COUNT(*) 
+FROM silver_payments
+GROUP BY policy_type;
+
+-- Avg transaction amount per policy type
+SELECT policy_type, ROUND(AVG(amount_rupees),2) AS avg_amount
+FROM silver_payments
+GROUP BY policy_type;
+
+-- Top 5 customers by total payments
+SELECT customer_name, email, SUM(amount_rupees) AS total_spent
+FROM silver_payments
+GROUP BY customer_name, email
+ORDER BY total_spent DESC
+LIMIT 5;
+
+## ----------- EDA ON GOLD ----------
+
+-- Customers with most successful payments
+SELECT customer_name, email, successful_payments
+FROM gold_payments_summary
+ORDER BY successful_payments DESC
+LIMIT 5;
+
+-- Policy type with highest revenue
+SELECT policy_type, SUM(total_amount) AS revenue
+FROM gold_payments_summary
+GROUP BY policy_type
+ORDER BY revenue DESC;
+
+-- Success vs Failed ratio
+SELECT 
+    SUM(successful_payments) AS total_success,
+    SUM(failed_payments) AS total_failed,
+    ROUND(SUM(successful_payments)/SUM(successful_payments+failed_payments)*100,2) AS success_rate
+FROM gold_payments_summary;
+

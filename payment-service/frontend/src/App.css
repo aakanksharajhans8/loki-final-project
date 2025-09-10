@@ -1,0 +1,67 @@
+
+
+
+/* Reset root container */
+#root {
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #f9fafb; /* light gray background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utility overrides */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: #1f2937; /* gray-800 */
+}
+
+p {
+  color: #4b5563; /* gray-600 */
+  line-height: 1.6;
+}
+
+/* Buttons (extra polish beyond Tailwind) */
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg font-semibold transition shadow;
+}
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-6 py-3;
+}
+.btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white shadow-md rounded-xl p-6;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Table polish */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: 600;
+  background-color: #f3f4f6; /* gray-100 */
+}
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
