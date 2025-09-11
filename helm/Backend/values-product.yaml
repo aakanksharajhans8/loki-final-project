@@ -1,0 +1,21 @@
+image:
+  repository: shreeyammohanty/notification-sbs-product
+  tag: latest
+
+service:
+  port: 8091
+
+ingress:
+  hosts:
+    - host: product.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+  rules: []
+

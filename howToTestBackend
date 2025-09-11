@@ -1,0 +1,246 @@
+1) Make sure you’re in the right folder
+bash
+Copy code
+cd "/Users/bhargav_kashyap/Downloads/Cams"
+(Optional) Silence the warning by removing the first line if it’s version: "3.9".
+
+2) Confirm the services defined in compose
+bash
+Copy code
+docker compose config --services
+You should see:
+
+cpp
+Copy code
+mysql
+notification-sbs-register
+notification-sbs-product
+3) Start fresh (also clears any broken MySQL volume)
+bash
+Copy code
+docker compose down -v
+If your Mac already has MySQL on 3306, edit .env and set MYSQL_PORT=3307 before the next step.
+
+4) Bring up only MySQL first and watch logs
+bash
+Copy code
+docker compose up -d mysql
+docker compose ps
+docker compose logs -f mysql
+Keep the logs running until you see something like:
+
+mysqld: ready for connections.
+
+or the compose healthcheck stops complaining.
+
+If you see “port already allocated” on 3306, set MYSQL_PORT=3307 in .env, then:
+
+bash
+Copy code
+docker compose down -v
+docker compose up -d mysql
+docker compose logs -f mysql
+5) Start the two apps
+bash
+Copy code
+docker compose up -d notification-sbs-register notification-sbs-product
+docker compose ps
+You want:
+
+lua
+Copy code
+mysql                        running (healthy)
+notification-sbs-register    running  0.0.0.0:8090->8090/tcp
+notification-sbs-product     running  0.0.0.0:8091->8091/tcp
+If an app exits, get its logs:
+
+bash
+Copy code
+docker compose logs --no-log-prefix --timestamps notification-sbs-register | tail -n 200
+docker compose logs --no-log-prefix --timestamps notification-sbs-product  | tail -n 200
+6) Test from the host
+bash
+Copy code
+curl -v http://localhost:8090/api/health
+curl -v http://localhost:8091/api/order/health
+Quick gotchas
+.env must have real values:
+
+ini
+Copy code
+DB_ROOT_PASSWORD=root
+DB_NAME=cams_notifications
+# set to 3307 if host 3306 is busy
+MYSQL_PORT=3306
+
+MAIL_USERNAME=yourgmail@gmail.com
+MAIL_PASSWORD=<your 16-char Gmail App Password>
+MAIL_FROM=yourgmail@gmail.com
+Don’t run the same app from STS while Docker is using the same port.
+
+Use service names with docker compose logs (mysql, notification-sbs-register, notification-sbs-product).
+If you want to use the container name instead, use plain docker logs cams-mysql.
+
+If anything still refuses to start, please paste the outputs of:
+
+bash
+Copy code
+docker compose ps
+docker compose logs --no-log-prefix --timestamps mysql | tail -n 200
+docker compose logs --no-log-prefix --timestamps notification-sbs-register | tail -n 200
+docker compose logs --no-log-prefix --timestamps notification-sbs-product  | tail -n 200
+
+
+
+1) Quick health checks
+In your browser or curl:
+
+Register service: http://localhost:8090/api/health
+
+Product service: http://localhost:8091/api/order/health
+
+You should get {"success":true,"message":"OK"} from each.
+
+If you still get “connection refused”, the apps aren’t running. Run:
+
+bash
+Copy code
+docker compose ps
+docker compose logs -f mysql
+docker compose logs -f notification-sbs-register
+docker compose logs -f notification-sbs-product
+2) Import my ready-made Postman collection
+Download and import these two files into Postman:
+
+CAMS_Notifications.postman_collection.json
+
+CAMS_Local.postman_environment.json
+
+Then in Postman:
+
+Click Import → choose both files.
+
+In the top-right env selector, choose CAMS Local.
+
+Update the test_email environment variable to the recipient you want to test (e.g., your own address).
+
+The collection includes:
+
+Health (GET) requests for both services
+
+Valid Register request
+
+Register with password mismatch (expects 400)
+
+Valid Order request
+
+Order with invalid email (expects 400)
+
+3) Run the two main POSTs in Postman
+A) Register notification
+arduino
+Copy code
+POST http://localhost:8090/api/register
+Content-Type: application/json
+Body (raw):
+{
+  "username":"jane_doe",
+  "email":"<your_recipient_email>",
+  "phoneNumber":"+919876543210",
+  "password":"P@ssw0rd!1",
+  "confirmPassword":"P@ssw0rd!1"
+}
+Expected:
+
+Status 200
+
+Body like: {"success":true,"message":"User registered & email sent to <email>"}
+
+B) Order notification
+pgsql
+Copy code
+POST http://localhost:8091/api/order/notify
+Content-Type: application/json
+Body (raw):
+{
+  "customerName":"John Doe",
+  "email":"<your_recipient_email>",
+  "orderId":"ORD-1001",
+  "productName":"USB-C Cable",
+  "quantity":2,
+  "price":199.99
+}
+Expected:
+
+Status 200
+
+Body like: {"success":true,"message":"Saved & email sent to <email>"}
+
+Tip: If you see validation errors (400), Postman will show a JSON body explaining which field failed.
+
+4) Verify rows in MySQL
+Run these from the folder with your compose file:
+
+bash
+Copy code
+# If you set a custom DB_ROOT_PASSWORD in .env, substitute it in the -p flag
+docker exec -it cams-mysql mysql -uroot -proot -e "
+  USE cams_notifications;
+  SELECT COUNT(*) AS registered_users FROM registered_users;
+  SELECT COUNT(*) AS order_notifications FROM order_notifications;
+  SELECT id, username, email, created_at 
+    FROM registered_users ORDER BY id DESC LIMIT 5;
+  SELECT id, order_id, email, product_name, total, created_at
+    FROM order_notifications ORDER BY id DESC LIMIT 5;
+"
+You should see your latest inserts.
+
+5) If emails don’t arrive
+Ensure .env (in the same folder as docker-compose.yml) has real values:
+
+ini
+Copy code
+MAIL_USERNAME=yourgmail@gmail.com
+MAIL_PASSWORD=<your 16-char Gmail App Password>  # not your normal password
+MAIL_FROM=yourgmail@gmail.com
+Check container logs for mail errors:
+
+bash
+Copy code
+docker compose logs -f notification-sbs-register
+docker compose logs -f notification-sbs-product
+Look for spring.mail debug output and exceptions.
+
+Check Spam folder of the recipient.
+
+If you changed .env, restart:
+
+bash
+Copy code
+docker compose down
+docker compose up -d --build
+6) Common errors & quick fixes
+400 Validation failed → Fix the field indicated by errors.{field} in response.
+
+500 Internal error / “Could not parse mail” → Usually MAIL_FROM/MAIL_USERNAME missing/invalid. Set both to a real email you own.
+
+DB access denied / JDBC connection error → The apps use DB_ROOT_PASSWORD from .env. If you changed it mid-way, reset volume:
+
+bash
+Copy code
+docker compose down -v
+docker compose up -d --build
+7) Bonus: Tiny in-browser forms
+Register page: http://localhost:8090/register.html
+
+Order page: http://localhost:8091/order.html
+
+These do the same POSTs as above, handy for quick manual checks.
+
+If any specific request fails, paste the status code, response body, and the last ~30 lines from the service logs:
+
+bash
+Copy code
+docker compose logs --no-log-prefix --timestamps notification-sbs-register | tail -n 200
+docker compose logs --no-log-prefix --timestamps notification-sbs-product  | tail -n 200
+I’ll pinpoint the cause immediately.

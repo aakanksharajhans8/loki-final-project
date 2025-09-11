@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notification-product
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Shreeyamohanty6/notification-service.git'
+    targetRevision: main
+    path: helm/Backend/notification-service
+    helm:
+      valueFiles:
+        - values-product.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,21 @@
+image:
+  repository: shreeyammohanty/notification-sbs-register
+  tag: latest
+
+service:
+  port: 8090
+
+ingress:
+  hosts:
+    - host: register.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+  rules: []
+

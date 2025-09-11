@@ -1,0 +1,61 @@
+# Default Helm values for notification-service (shared config)
+
+replicaCount: 1
+
+image:
+  repository: ""   # Override in child values
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:   # Common DB + Mail configs
+  - name: DB_URL
+    value: jdbc:mysql://mysql:3306/cams_notifications?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+  - name: DB_USERNAME
+    value: root
+  - name: DB_PASSWORD
+    value: root
+  - name: MAIL_USERNAME
+    value: ""
+  - name: MAIL_PASSWORD
+    value: ""
+  - name: MAIL_FROM
+    value: ""
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  hosts: []   # Override in child values
+  tls: []
+
+serviceAccount:
+  create: true
+  name: ""
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+  rules: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+

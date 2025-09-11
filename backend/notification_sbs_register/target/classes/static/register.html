@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"/><title>Register Test</title></head>
+<body><h1>Register User</h1>
+<form id="f">
+  <label>Username <input name="username" required></label><br/>
+  <label>Email <input name="email" type="email" required></label><br/>
+  <label>Phone <input name="phoneNumber" required></label><br/>
+  <label>Password <input name="password" type="password" required></label><br/>
+  <label>Confirm Password <input name="confirmPassword" type="password" required></label><br/>
+  <button type="submit">Register</button>
+</form>
+<pre id="out"></pre>
+<script>
+const f=document.getElementById('f');
+f.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(f).entries());
+  const res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  document.getElementById('out').textContent=await res.text();
+});
+</script>
+</body></html>

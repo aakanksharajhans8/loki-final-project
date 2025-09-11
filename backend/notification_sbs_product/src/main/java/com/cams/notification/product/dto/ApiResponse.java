@@ -1,0 +1,1 @@
+package com.cams.notification.product.dto; public record ApiResponse(boolean success, String message) {}

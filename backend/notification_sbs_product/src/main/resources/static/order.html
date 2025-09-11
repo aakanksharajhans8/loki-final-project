@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"/><title>Order Notification Test</title></head>
+<body><h1>Place Order & Send Email</h1>
+<form id="f">
+  <label>Customer Name <input name="customerName" required></label><br/>
+  <label>Email <input name="email" type="email" required></label><br/>
+  <label>Order ID <input name="orderId" required></label><br/>
+  <label>Product Name <input name="productName" required></label><br/>
+  <label>Quantity <input name="quantity" type="number" min="1" required></label><br/>
+  <label>Unit Price <input name="price" type="number" step="0.01" min="0.01" required></label><br/>
+  <button type="submit">Place Order</button>
+</form>
+<pre id="out"></pre>
+<script>
+const f=document.getElementById('f');
+f.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(f).entries());
+  data.quantity=Number(data.quantity); data.price=Number(data.price);
+  const res=await fetch('/api/order/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  document.getElementById('out').textContent=await res.text();
+});
+</script>
+</body></html>
